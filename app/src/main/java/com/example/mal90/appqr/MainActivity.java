@@ -26,7 +26,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private TextView textView;
     private ImageView imageView;
     private AsyncTask hebra;
@@ -60,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             String key = "1234";
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
             try {
+                //Se calcula la Hmac con la key y la hora actualizada por minuto
+                //y se genera el codigo QR
                 Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
                 SecretKeySpec secret_key = new SecretKeySpec(key.getBytes("UTF-8"), "HmacSHA256");
                 sha256_HMAC.init(secret_key);
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             super.onCancelled();
         }
     }
-
+    //Se calcula la hora actual y duerme la hebra un minuto
     public String HmacSha256() {
         textView = (TextView) this.findViewById(R.id.textView);
         imageView = (ImageView) this.findViewById(R.id.imageView);
