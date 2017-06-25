@@ -1,5 +1,6 @@
 package com.example.mal90.appqr;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,20 +25,34 @@ import java.util.Date;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import static java.lang.Integer.parseInt;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
     private ImageView imageView;
     private AsyncTask hebra;
-    private boolean first = false;
+    private boolean first = true;
+    String key;
+    Integer seconds;
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd:HH:mm");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd:HH:mm");
+    SimpleDateFormat dateFormat2 = new SimpleDateFormat("s");
+
     String currentTimeStamp = dateFormat.format(new Date());
+    String currentTimeStamp2 = dateFormat2.format(new Date());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent=getIntent();
+        Bundle extras =intent.getExtras();
+        key = (String)extras.get("key");
+
+
+
         hebra = new QrGenerator().execute();
     }
 
@@ -48,15 +63,30 @@ public class MainActivity extends AppCompatActivity {
 
     public class QrGenerator extends AsyncTask<Void, Integer, Boolean> {
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            currentTimeStamp2 = dateFormat2.format(new Date());
+            seconds = 60 - parseInt(currentTimeStamp2);
+            if(first) {
+                try {
+                    Thread.sleep(seconds);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                first = false;
+            }
+        }
+
+        @Override
         protected Boolean doInBackground(Void... voids) {
             HmacSha256();
             return true;
+
         }
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            textView.setText(currentTimeStamp);
-            //Toast.makeText(MainActivity.this, "Cada 5 segundos", Toast.LENGTH_SHORT).show();
-            String key = "1234";
+            textView.setText(currentTimeStamp + " " + currentTimeStamp2+ " Seconds restantes: " + seconds);
+            //Toast.makeText(MainActivity.this, "Cada 10 segundos", Toast.LENGTH_SHORT).show();
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
             try {
                 //Se calcula la Hmac con la key y la hora actualizada por minuto
@@ -92,14 +122,6 @@ public class MainActivity extends AppCompatActivity {
         textView = (TextView) this.findViewById(R.id.textView);
         imageView = (ImageView) this.findViewById(R.id.imageView);
         currentTimeStamp = dateFormat.format(new Date());
-        if(first) {
-            try {
-                Thread.sleep(60000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        first = true;
         return currentTimeStamp;
     }
 
