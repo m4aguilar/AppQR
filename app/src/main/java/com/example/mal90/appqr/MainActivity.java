@@ -85,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            textView.setText(currentTimeStamp + " " + currentTimeStamp2+ " Seconds restantes: " + seconds);
+            //textView.setText(currentTimeStamp + " " + currentTimeStamp2+ " Seconds restantes: " + seconds);
+            textView.setText("Segundos restantes: " + seconds);
             //Toast.makeText(MainActivity.this, "Cada 10 segundos", Toast.LENGTH_SHORT).show();
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
             try {
